@@ -38,12 +38,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unbywyd/TSDIAPI-IO"
+    "url": "git+https://github.com/unbywyd/TSDIAPI-io"
   },
   "bugs": {
-    "url": "https://github.com/unbywyd/TSDIAPI-IO/issues"
+    "url": "https://github.com/unbywyd/TSDIAPI-io/issues"
   },
-  "homepage": "https://github.com/unbywyd/TSDIAPI-IO#readme",
+  "homepage": "https://github.com/unbywyd/TSDIAPI-io#readme",
   "files": [
     "output/",
     "README.md",
