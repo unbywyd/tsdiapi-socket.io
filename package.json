@@ -1,0 +1,52 @@
+{
+  "name": "tsdiapi-io",
+  "description": "WebSocket plugin for the TSDIAPI-Server framework, providing seamless integration with Socket.IO and socket-controllers.",
+  "version": "1.0.0",
+  "main": "output/index.js",
+  "types": "output/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": {
+    "name": "Artyom Gorlovetskiy",
+    "url": "https://github.com/unbywyd",
+    "email": "unbywyd@gmail.com"
+  },
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "keywords": [
+    "tsdiapi",
+    "websockets",
+    "socket.io",
+    "socket-controllers",
+    "typescript"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "glob": "^11.0.1",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "typedi": "^0.10.0",
+    "socket-controllers": "^0.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unbywyd/tsdiapi-io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unbywyd/tsdiapi-io/issues"
+  },
+  "homepage": "https://github.com/unbywyd/tsdiapi-io#readme",
+  "files": [
+    "output/",
+    "README.md",
+    "LICENSE"
+  ]
+}
