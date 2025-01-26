@@ -37,6 +37,7 @@ exports.addAppSocketEmitter = addAppSocketEmitter;
 exports.default = default_1;
 const socket_io_1 = require("socket.io");
 const glob_1 = require("glob");
+const socket_controllers_1 = require("socket-controllers");
 function addAppSocketEmitter(socket) {
     const extendedSocket = socket;
     extendedSocket.emitSuccess = function (event, data) {
@@ -136,16 +137,23 @@ class App {
         const socketControllers = this.config.socketControllers;
         if (!socketControllers || typeof socketControllers !== "function") {
             console.error("SocketControllers not found");
-        }
-        try {
-            new socketControllers({
+            new socket_controllers_1.SocketControllers({
                 io,
                 container: container,
                 controllers: controllers,
             });
         }
-        catch (err) {
-            console.error(err);
+        else {
+            try {
+                new socketControllers({
+                    io,
+                    container: container,
+                    controllers: controllers,
+                });
+            }
+            catch (err) {
+                console.error(err);
+            }
         }
     }
     async onInit(ctx) {
