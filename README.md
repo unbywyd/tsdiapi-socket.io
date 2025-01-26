@@ -26,8 +26,8 @@ import { SocketControllers } from "socket-controllers";
 
 createApp({
   plugins: [
-    new cronPlugin(),
-    new ioPlugin({
+    cronPlugin(),
+    ioPlugin({
       socketControllers: SocketControllers,
     }),
   ],
