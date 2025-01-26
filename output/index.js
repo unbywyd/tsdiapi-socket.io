@@ -137,17 +137,15 @@ class App {
         if (!socketControllers || typeof socketControllers !== "function") {
             console.error("SocketControllers not found");
         }
-        else {
-            try {
-                new socketControllers({
-                    io,
-                    container: container,
-                    controllers: controllers,
-                });
-            }
-            catch (err) {
-                console.error(err);
-            }
+        try {
+            new socketControllers({
+                io,
+                container: container,
+                controllers: controllers,
+            });
+        }
+        catch (err) {
+            console.error(err);
         }
     }
     async onInit(ctx) {

@@ -1,6 +1,5 @@
 import type { Application, Request, Response } from 'express';
 import { Server as httpServer } from "http";
-import type { Container } from 'typedi';
 import { Server as SocketIOServer, ServerOptions, Socket } from "socket.io";
 import { glob } from 'glob';
 import type { SocketControllers } from "socket-controllers";
@@ -180,16 +179,15 @@ class App implements AppPlugin {
         const socketControllers = this.config.socketControllers;
         if (!socketControllers || typeof socketControllers !== "function") {
             console.error("SocketControllers not found");
-        } else {
-            try {
-                new socketControllers({
-                    io,
-                    container: container,
-                    controllers: controllers,
-                });
-            } catch (err) {
-                console.error(err);
-            }
+        }
+        try {
+            new socketControllers({
+                io,
+                container: container,
+                controllers: controllers,
+            });
+        } catch (err) {
+            console.error(err);
         }
     }
     async onInit(ctx: AppContext) {
