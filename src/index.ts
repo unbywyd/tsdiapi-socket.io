@@ -106,7 +106,7 @@ export type SocketEvents = {
     }
 }
 
-export default class App implements AppPlugin {
+class App implements AppPlugin {
     name = 'tsdiapi-io';
     config: PluginOptions;
     globFilesPath: string;
@@ -198,4 +198,8 @@ export default class App implements AppPlugin {
     async beforeStart(ctx: AppContext) {
         this.registerSocketControllers(ctx.app, ctx.server);
     }
+}
+
+export default function (config?: PluginOptions) {
+    return new App(config);
 }

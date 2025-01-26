@@ -32,7 +32,7 @@ export type SocketEvents = {
         response: any;
     };
 };
-export default class App implements AppPlugin {
+declare class App implements AppPlugin {
     name: string;
     config: PluginOptions;
     globFilesPath: string;
@@ -42,4 +42,6 @@ export default class App implements AppPlugin {
     onInit(ctx: AppContext): Promise<void>;
     beforeStart(ctx: AppContext): Promise<void>;
 }
+export default function (config?: PluginOptions): App;
+export {};
 //# sourceMappingURL=index.d.ts.map

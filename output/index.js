@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addAppSocketEmitter = addAppSocketEmitter;
+exports.default = default_1;
 const socket_io_1 = require("socket.io");
 const glob_1 = require("glob");
 function addAppSocketEmitter(socket) {
@@ -156,5 +157,7 @@ class App {
         this.registerSocketControllers(ctx.app, ctx.server);
     }
 }
-exports.default = App;
+function default_1(config) {
+    return new App(config);
+}
 //# sourceMappingURL=index.js.map
