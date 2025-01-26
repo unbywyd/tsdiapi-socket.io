@@ -136,7 +136,6 @@ class App {
         }
         const socketControllers = this.config.socketControllers;
         if (!socketControllers || typeof socketControllers !== "function") {
-            console.error("SocketControllers not found");
             new socket_controllers_1.SocketControllers({
                 io,
                 container: container,

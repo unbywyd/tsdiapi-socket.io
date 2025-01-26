@@ -86,7 +86,7 @@ export type PluginOptions = {
     globFilesPath?: string;
     verify?<T>(token: string): Promise<T>;
     socketOptions?: Partial<ServerOptions>;
-    socketControllers: typeof SocketControllers;
+    socketControllers?: typeof SocketControllers;
 }
 
 const defaultConfig: Partial<PluginOptions> = {
@@ -178,7 +178,6 @@ class App implements AppPlugin {
         }
         const socketControllers = this.config.socketControllers;
         if (!socketControllers || typeof socketControllers !== "function") {
-            console.error("SocketControllers not found");
             new SocketControllers({
                 io,
                 container: container,

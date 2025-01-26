@@ -24,7 +24,7 @@ export type PluginOptions = {
     globFilesPath?: string;
     verify?<T>(token: string): Promise<T>;
     socketOptions?: Partial<ServerOptions>;
-    socketControllers: typeof SocketControllers;
+    socketControllers?: typeof SocketControllers;
 };
 export type SocketEvents = {
     [key: string]: {

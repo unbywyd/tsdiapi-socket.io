@@ -22,15 +22,9 @@ Add the plugin to your TSDIAPI-Server application:
 import { createApp } from "./app";
 import cronPlugin from "tsdiapi-cron";
 import ioPlugin from "tsdiapi-io";
-import { SocketControllers } from "socket-controllers";
 
 createApp({
-  plugins: [
-    cronPlugin(),
-    ioPlugin({
-      socketControllers: SocketControllers,
-    }),
-  ],
+  plugins: [cronPlugin(), ioPlugin()],
 });
 ```
 
