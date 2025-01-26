@@ -1,6 +1,6 @@
 # TSDIAPI-IO: WebSocket Plugin for TSDIAPI-Server
 
-TSDIAPI-IO is a plugin for the [TSDIAPI-Server](https://github.com/your-org/tsdiapi-server) framework, designed to integrate WebSocket capabilities using `Socket.IO` and `socket-controllers`.
+TSDIAPI-IO is a plugin for the [TSDIAPI-Server](https://github.com/unbywyd/tsdiapi-server) framework, designed to integrate WebSocket capabilities using `Socket.IO` and `socket-controllers`.
 
 ---
 
