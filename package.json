@@ -31,15 +31,15 @@
     "glob": "^11.0.1"
   },
   "devDependencies": {
+    "@tsdiapi/server": "^0.0.1-alpha",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.10",
-    "@tsdiapi/server": ">=0.0.1 <1.0.0",
     "typescript": "^5.7.2"
   },
   "peerDependencies": {
     "socket-controllers": "^0.3.1",
-    "typedi": "^0.10.0",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "typedi": "^0.10.0"
   },
   "repository": {
     "type": "git",

@@ -3,7 +3,7 @@ import { Server as httpServer } from "http";
 import { Server as SocketIOServer, ServerOptions, Socket } from "socket.io";
 import { glob } from 'glob';
 import { SocketControllers } from "socket-controllers";
-import type { AppPlugin, AppContext } from 'tsdiapi-server';
+import type { AppPlugin, AppContext } from '@tsdiapi/server';
 export type SocketSuccessResponse<T> = {
     status: "ok";
     data?: T;
