@@ -1,9 +1,13 @@
 {
-  "name": "tsdiapi-io",
+  "name": "@tsdiapi/socket.io",
   "description": "WebSocket plugin for the TSDIAPI-Server framework, providing seamless integration with Socket.IO and socket-controllers.",
-  "version": "1.0.0",
+  "version": "0.0.1-alpha.1",
   "main": "output/index.js",
   "types": "output/index.d.ts",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc"
   },
@@ -29,7 +33,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.10",
-    "tsdiapi-server": "github:unbywyd/tsdiapi-server#master",
+    "@tsdiapi/server": ">=0.0.1 <1.0.0",
     "typescript": "^5.7.2"
   },
   "peerDependencies": {
@@ -39,12 +43,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unbywyd/TSDIAPI-io"
+    "url": "git+https://github.com/unbywyd/tsdiapi-socket.io"
   },
   "bugs": {
-    "url": "https://github.com/unbywyd/TSDIAPI-io/issues"
+    "url": "https://github.com/unbywyd/tsdiapi-socket.io/issues"
   },
-  "homepage": "https://github.com/unbywyd/TSDIAPI-io#readme",
+  "homepage": "https://github.com/unbywyd/tsdiapi-socket.io#readme",
   "files": [
     "output/",
     "README.md",

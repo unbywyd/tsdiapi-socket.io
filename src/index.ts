@@ -83,14 +83,14 @@ export function addAppSocketEmitter<
 }
 
 export type PluginOptions = {
-    globFilesPath?: string;
+    autoloadGlobPath?: string;
     verify?<T>(token: string): Promise<T>;
     socketOptions?: Partial<ServerOptions>;
     socketControllers?: typeof SocketControllers;
 }
 
 const defaultConfig: Partial<PluginOptions> = {
-    globFilesPath: "*.socket{.ts,.js}",
+    autoloadGlobPath: "*.socket{.ts,.js}",
     socketOptions: {
         cors: {
             origin: "*",
@@ -113,7 +113,7 @@ class App implements AppPlugin {
 
     constructor(config?: PluginOptions) {
         this.config = { ...config };
-        this.globFilesPath = this.config.globFilesPath || defaultConfig.globFilesPath;
+        this.globFilesPath = this.config.autoloadGlobPath || defaultConfig.autoloadGlobPath;
     }
     async registerSocketControllers(app: Application, server: httpServer) {
         const apiDir = this.context.apiDir;

@@ -57,7 +57,7 @@ function addAppSocketEmitter(socket) {
     return extendedSocket;
 }
 const defaultConfig = {
-    globFilesPath: "*.socket{.ts,.js}",
+    autoloadGlobPath: "*.socket{.ts,.js}",
     socketOptions: {
         cors: {
             origin: "*",
@@ -71,7 +71,7 @@ class App {
     context;
     constructor(config) {
         this.config = { ...config };
-        this.globFilesPath = this.config.globFilesPath || defaultConfig.globFilesPath;
+        this.globFilesPath = this.config.autoloadGlobPath || defaultConfig.autoloadGlobPath;
     }
     async registerSocketControllers(app, server) {
         const apiDir = this.context.apiDir;

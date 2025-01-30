@@ -21,7 +21,7 @@ export type AuthAppSocket<SessionType, IncomingEvent extends string, OutgoingEve
 };
 export declare function addAppSocketEmitter<IncomingEvent extends string, OutgoingEvent extends string, Payloads extends Record<IncomingEvent, any>, Responses extends Record<OutgoingEvent, any>>(socket: Socket): AppSocket<IncomingEvent, OutgoingEvent, Payloads, Responses>;
 export type PluginOptions = {
-    globFilesPath?: string;
+    autoloadGlobPath?: string;
     verify?<T>(token: string): Promise<T>;
     socketOptions?: Partial<ServerOptions>;
     socketControllers?: typeof SocketControllers;

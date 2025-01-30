@@ -1,13 +1,21 @@
-# TSDIAPI-IO: WebSocket Plugin for TSDIAPI-Server
+# TSDIAPI Socket.IO Plugin for TSDIAPI-Server
 
-TSDIAPI-IO is a plugin for the [TSDIAPI-Server](https://github.com/unbywyd/tsdiapi-server) framework, designed to integrate WebSocket capabilities using `Socket.IO` and `socket-controllers`.
+The **@tsdiapi/socket.io** plugin integrates WebSocket functionality into the [TSDIAPI-Server](https://github.com/unbywyd/tsdiapi-server), utilizing `Socket.IO` and `socket-controllers`. This plugin offers type-safe event handling with TypeScript decorators and supports both authenticated and unauthenticated connections.
 
 ---
 
 ## Installation
 
+Install the plugin via NPM:
+
 ```bash
-npm install tsdiapi-io socket-controllers
+npm install @tsdiapi/socket.io socket-controllers
+```
+
+Or use the CLI to install it in your project:
+
+```bash
+tsdiapi add plugin socket.io
 ```
 
 ---
@@ -16,15 +24,14 @@ npm install tsdiapi-io socket-controllers
 
 ### Add the Plugin
 
-Add the plugin to your TSDIAPI-Server application:
+Register the plugin in your TSDIAPI-Server application:
 
 ```typescript
-import { createApp } from "./app";
-import cronPlugin from "tsdiapi-cron";
-import ioPlugin from "tsdiapi-io";
+import { createApp } from "@tsdiapi/server";
+import ioPlugin from "@tsdiapi/socket.io";
 
 createApp({
-  plugins: [cronPlugin(), ioPlugin()],
+  plugins: [ioPlugin()],
 });
 ```
 
@@ -32,7 +39,7 @@ createApp({
 
 ### Define a WebSocket Controller
 
-Create a controller to handle WebSocket events:
+Create a controller to handle socket events:
 
 ```typescript
 import {
@@ -43,63 +50,52 @@ import {
   OnMessage,
   SocketController,
 } from "socket-controllers";
-import { AppSocket, AuthAppSocket } from "tsdiapi-io";
+import { AuthAppSocket } from "@tsdiapi/socket.io";
 import { Service } from "typedi";
 
-export enum SocketIncomingEvent {
+export enum SocketEvent {
   helloWorld = "helloWorld",
 }
 
 export interface SocketPayloads {
-  [SocketIncomingEvent.helloWorld]: {};
-}
-
-export enum SocketOutgoingEvent {
-  helloWorld = "helloWorld",
+  [SocketEvent.helloWorld]: {};
 }
 
 export interface SocketResponses {
-  [SocketOutgoingEvent.helloWorld]: {
+  [SocketEvent.helloWorld]: {
     message: string;
   };
 }
 
-type AppSocketAuthType = AuthAppSocket<
+type AppSocketType = AuthAppSocket<
   { userId: string },
-  SocketIncomingEvent,
-  SocketOutgoingEvent,
-  SocketPayloads,
-  SocketResponses
->;
-type AppSocketType = AppSocket<
-  SocketIncomingEvent,
-  SocketOutgoingEvent,
+  SocketEvent,
+  SocketEvent,
   SocketPayloads,
   SocketResponses
 >;
 
 @SocketController()
 @Service()
-export default class MessageController {
+export class MessageController {
   @OnConnect()
-  connection(@ConnectedSocket() socket: AppSocketAuthType) {
-    console.log("connect");
+  connection(@ConnectedSocket() socket: AppSocketType) {
+    console.log("Client connected");
   }
 
   @OnDisconnect()
   disconnect(@ConnectedSocket() socket: AppSocketType) {
-    console.log("disconnect");
+    console.log("Client disconnected");
   }
 
-  @OnMessage(SocketIncomingEvent.helloWorld)
-  async save(
+  @OnMessage(SocketEvent.helloWorld)
+  async onHelloWorld(
     @ConnectedSocket() socket: AppSocketType,
-    @MessageBody()
-    message: SocketPayloads[SocketIncomingEvent.helloWorld]
+    @MessageBody() message: SocketPayloads[SocketEvent.helloWorld]
   ) {
-    console.log("message", message);
-    socket.emitSuccess(SocketOutgoingEvent.helloWorld, {
-      message: "Hello World =)",
+    console.log("Received message:", message);
+    socket.emitSuccess(SocketEvent.helloWorld, {
+      message: "Hello World!",
     });
   }
 }
@@ -109,13 +105,22 @@ export default class MessageController {
 
 ## Key Features
 
-- **Declarative Controllers**: Use decorators like `@OnConnect`, `@OnDisconnect`, and `@OnMessage` to handle socket events.
-- **Authentication Support**: Use `AuthAppSocket` to manage sessions for authenticated sockets.
-- **Type-Safe Communication**: Strongly typed payloads and responses for incoming and outgoing events.
+- **Declarative Controllers**: Handle events like `connect`, `disconnect`, and messages with decorators such as `@OnConnect` and `@OnMessage`.
+- **Authentication Support**: Use `AuthAppSocket` to secure and manage authenticated socket connections.
+- **Type Safety**: Define strongly typed payloads and responses for each event.
+- **Seamless Integration**: Automatically register and manage WebSocket controllers within the TSDIAPI-Server lifecycle.
 
 ---
 
-This plugin simplifies WebSocket integration and ensures type safety with minimal setup.
+## Plugin Lifecycle Integration
+
+The plugin hooks into the TSDIAPI lifecycle:
+
+- **`onInit`**: Initializes the WebSocket server.
+- **`afterStart`**: Starts listening for WebSocket connections and events.
+- **`beforeStart`**: Allows custom pre-start setup if needed.
+
+---
 
 ## Contributing
 
@@ -125,6 +130,4 @@ Contributions are welcome! Feel free to open issues or submit pull requests to i
 
 ## License
 
-This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-This documentation provides an overview of the library, how to set it up, and detailed examples for integration and usage. Let me know if you'd like to refine it further!
+This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
