@@ -106,7 +106,7 @@ export type SocketEvents = {
 }
 
 class App implements AppPlugin {
-    name = 'tsdiapi-io';
+    name = 'tsdiapi-socket.io';
     config: PluginOptions;
     globFilesPath: string;
     context: AppContext;

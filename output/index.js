@@ -65,7 +65,7 @@ const defaultConfig = {
     }
 };
 class App {
-    name = 'tsdiapi-io';
+    name = 'tsdiapi-socket.io';
     config;
     globFilesPath;
     context;
