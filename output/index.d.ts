@@ -2,7 +2,7 @@ import type { Application } from 'express';
 import { Server as httpServer } from "http";
 import { ServerOptions, Socket } from "socket.io";
 import { SocketControllers } from "socket-controllers";
-import type { AppPlugin, AppContext } from 'tsdiapi-server';
+import type { AppPlugin, AppContext } from '@tsdiapi/server';
 export type SocketSuccessResponse<T> = {
     status: "ok";
     data?: T;
