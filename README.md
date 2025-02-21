@@ -15,7 +15,7 @@ npm install @tsdiapi/socket.io socket-controllers
 Or use the CLI to install it in your project:
 
 ```bash
-tsdiapi add plugin socket.io
+tsdiapi plugins add socket.io
 ```
 
 ---
@@ -36,6 +36,20 @@ createApp({
 ```
 
 ---
+
+## Code Generation
+
+| Name   | Description                              |
+| ------ | ---------------------------------------- |
+| `base` | Generates a new Socket.IO event handler. |
+
+The **TSDIAPI-Socket.IO** plugin includes a generator to create socket event handlers easily. Use the `tsdiapi` CLI to generate a new event controller:
+
+```bash
+tsdiapi generate socket.io
+```
+
+You will be prompted to enter an **event name** from the `@base/sockets.types` file, which is generated when the plugin is added.
 
 ### Define a WebSocket Controller
 
@@ -130,4 +144,4 @@ Contributions are welcome! Feel free to open issues or submit pull requests to i
 
 ## License
 
-This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
+This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -1,0 +1,37 @@
+{
+  "name": "@tsdiapi/socket.io",
+  "description": "Socket.IO plugin for TSDIAPI-Server using socket-controllers.",
+  "files": [
+    {
+      "source": "files/*.ts",
+      "destination": "src/",
+      "overwrite": false
+    }
+  ],
+  "generators": [
+    {
+      "name": "base",
+      "description": "Generate a base socket controller.",
+      "files": [
+        {
+          "source": "generators/base/*.*",
+          "destination": ".",
+          "overwrite": false,
+          "isHandlebarsTemplate": true
+        }
+      ],
+      "args": [
+        {
+          "name": "eventName",
+          "description": "Socket event name (e.g., 'message', 'update'). This event will be included from the @base/sockets.types file, which is generated when the plugin is added to the project.",
+          "validate": "^[a-zA-Z0-9_]+$",
+          "inquirer": {
+            "type": "input",
+            "message": "Enter the event name from @base/sockets.types:",
+            "default": "helloWorld"
+          }
+        }
+      ]
+    }
+  ]
+}
