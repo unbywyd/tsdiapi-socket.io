@@ -31,7 +31,14 @@
             "default": "helloWorld"
           }
         }
+      ],
+      "postMessages": [
+        "📌 Your base socket controller has been generated successfully!"
       ]
     }
+  ],
+  "postMessages": [
+    "📌 The @tsdiapi/socket.io plugin has been successfully installed!",
+    "📌 To generate a base socket controller, run the command 'tsdiapi generate socket.io'."
   ]
 }

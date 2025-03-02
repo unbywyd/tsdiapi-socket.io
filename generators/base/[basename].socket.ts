@@ -12,15 +12,15 @@ import {
  
  @SocketController()
  @Service()
- export default class {{classname}}Controller {
+ export default class {{className}}Controller {
    @OnConnect()
    connection(@ConnectedSocket() socket: AppSocketAuthType) {
-     console.log("{{classname}} connected");
+     console.log("{{className}} connected");
    }
  
    @OnDisconnect()
    disconnect(@ConnectedSocket() socket: AppSocketType) {
-     console.log("{{classname}} disconnected");
+     console.log("{{className}} disconnected");
    }
  
    @OnMessage(SocketIncomingEvent.{{eventName}})
@@ -31,7 +31,7 @@ import {
    ) {
      console.log("Received {{eventName}} message:", message);
      socket.emitSuccess(SocketOutgoingEvent.{{eventName}}, {
-       message: "{{classname}} processed event {{eventName}}.",
+       message: "{{className}} processed event {{eventName}}.",
      });
    }
  }
