@@ -8,7 +8,7 @@ import {
  } from "socket-controllers";
  import { Service } from "typedi";
  
- import { AppSocketAuthType, AppSocketType, SocketIncomingEvent, SocketPayloads, SocketOutgoingEvent } from "@base/sockets.types";
+ import { AppSocketAuthType, AppSocketType, SocketIncomingEvent, SocketPayloads, SocketOutgoingEvent } from "@base/sockets.types.js";
  
  @SocketController()
  @Service()

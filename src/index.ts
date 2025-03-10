@@ -4,6 +4,9 @@ import { Server as SocketIOServer, ServerOptions, Socket } from "socket.io";
 import { glob } from 'glob';
 import { SocketControllers } from "socket-controllers";
 import type { AppPlugin, AppContext } from '@tsdiapi/server';
+import { posix } from "path";
+import { pathToFileURL } from "url";
+
 export type SocketSuccessResponse<T> = {
     status: "ok";
     data?: T;
@@ -167,13 +170,14 @@ class App implements AppPlugin {
         const container = this.context.container;
         const globPath = apiDir + "/**/" + this.globFilesPath;
 
-        const appDir = this.context.appDir;
         const controllers: Array<Function> = [];
-        const files = glob.sync(globPath, { cwd: appDir });
+        const fixedPattern = posix.join(globPath.replace(/\\/g, "/"));
+        const files = glob.sync(fixedPattern, { absolute: true });
         for (const file of files) {
-            const module = await import(appDir + "/" + file);
-            if (module.default) {
-                controllers.push(module.default);
+            const fileUrl = pathToFileURL(file).href;
+            const importedModule = await import(fileUrl);
+            if (importedModule.default) {
+                controllers.push(importedModule.default);
             }
         }
         const socketControllers = this.config.socketControllers;
@@ -207,3 +211,5 @@ class App implements AppPlugin {
 export default function (config?: PluginOptions) {
     return new App(config);
 }
+
+

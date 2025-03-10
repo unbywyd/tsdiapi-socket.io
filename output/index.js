@@ -1,44 +1,9 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addAppSocketEmitter = addAppSocketEmitter;
-exports.default = default_1;
-const socket_io_1 = require("socket.io");
-const glob_1 = require("glob");
-const socket_controllers_1 = require("socket-controllers");
-function addAppSocketEmitter(socket) {
+import { Server as SocketIOServer } from "socket.io";
+import { glob } from 'glob';
+import { SocketControllers } from "socket-controllers";
+import { posix } from "path";
+import { pathToFileURL } from "url";
+export function addAppSocketEmitter(socket) {
     const extendedSocket = socket;
     extendedSocket.emitSuccess = function (event, data) {
         const message = {
@@ -79,7 +44,7 @@ class App {
         if (this.config.socketOptions?.cors && corsOptions) {
             corsOptions = { ...corsOptions, ...this.config.socketOptions.cors };
         }
-        const io = new socket_io_1.Server(server, {
+        const io = new SocketIOServer(server, {
             cors: corsOptions
         });
         // Socket.io Started 
@@ -125,18 +90,19 @@ class App {
         });
         const container = this.context.container;
         const globPath = apiDir + "/**/" + this.globFilesPath;
-        const appDir = this.context.appDir;
         const controllers = [];
-        const files = glob_1.glob.sync(globPath, { cwd: appDir });
+        const fixedPattern = posix.join(globPath.replace(/\\/g, "/"));
+        const files = glob.sync(fixedPattern, { absolute: true });
         for (const file of files) {
-            const module = await Promise.resolve(`${appDir + "/" + file}`).then(s => __importStar(require(s)));
-            if (module.default) {
-                controllers.push(module.default);
+            const fileUrl = pathToFileURL(file).href;
+            const importedModule = await import(fileUrl);
+            if (importedModule.default) {
+                controllers.push(importedModule.default);
             }
         }
         const socketControllers = this.config.socketControllers;
         if (!socketControllers || typeof socketControllers !== "function") {
-            new socket_controllers_1.SocketControllers({
+            new SocketControllers({
                 io,
                 container: container,
                 controllers: controllers,
@@ -162,7 +128,7 @@ class App {
         this.registerSocketControllers(ctx.app, ctx.server);
     }
 }
-function default_1(config) {
+export default function (config) {
     return new App(config);
 }
 //# sourceMappingURL=index.js.map
