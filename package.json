@@ -1,7 +1,7 @@
 {
   "name": "@tsdiapi/socket.io",
   "description": "WebSocket plugin for the TSDIAPI-Server framework, providing seamless integration with Socket.IO and socket-controllers.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "output/index.js",
   "type": "module",
   "types": "output/index.d.ts",
@@ -53,6 +53,7 @@
   "files": [
     "output/",
     "README.md",
+    "files",
     "LICENSE.md",
     "generators/",
     "tsdiapi.config.json"
