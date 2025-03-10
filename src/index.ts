@@ -119,86 +119,93 @@ class App implements AppPlugin {
         this.globFilesPath = this.config.autoloadGlobPath || defaultConfig.autoloadGlobPath;
     }
     async registerSocketControllers(app: Application, server: httpServer) {
-        const apiDir = this.context.apiDir;
-        let corsOptions = this.context.config?.corsOptions || defaultConfig.socketOptions?.cors;
-        if (this.config.socketOptions?.cors && corsOptions) {
-            corsOptions = { ...corsOptions, ...this.config.socketOptions.cors }
-        }
-        const io = new SocketIOServer(server, {
-            cors: corsOptions
-        });
+        try {
+            const apiDir = this.context.apiDir;
+            let corsOptions = this.context.config?.corsOptions || defaultConfig.socketOptions?.cors;
+            if (this.config.socketOptions?.cors && corsOptions) {
+                corsOptions = { ...corsOptions, ...this.config.socketOptions.cors }
+            }
+            const io = new SocketIOServer(server, {
+                cors: corsOptions
+            });
 
-        // Socket.io Started 
-        this.context.logger.info(`Socket.io Started`);
+            // Socket.io Started 
+            this.context.logger.info(`Socket.io Started`);
 
-        app.use(function (req: Request, res: Response, next) {
-            (req as any).io = io;
-            next();
-        });
-        io.use(async (socket: Socket, next: any) => {
-            addAppSocketEmitter(socket);
-            const token = socket.handshake.query.authToken as string;
-
-            const originOn = socket.on;
-            (socket as any).on = function (event: string, fn: Function) {
-                originOn.call(socket, event, async function (data: any) {
-                    try {
-                        const json = JSON.parse(data);
-                        return await fn(json);
-                    } catch (err) {
-                        return await fn(data);
-                    }
-                });
-            };
-            const verify = this.config?.verify;
-            if (verify && typeof verify === "function") {
-                if (!token) {
-                    next(new Error("Authentication error"));
-                } else {
-                    const session = await verify(token);
-                    if (!session) {
-                        next(new Error("Authentication error"));
+            app.use(function (req: Request, res: Response, next) {
+                (req as any).io = io;
+                next();
+            });
+            io.use(async (socket: Socket, next: any) => {
+                try {
+                    addAppSocketEmitter(socket);
+                    const token = socket.handshake.query.authToken as string;
+                    const originOn = socket.on;
+                    (socket as any).on = function (event: string, fn: Function) {
+                        originOn.call(socket, event, async function (data: any) {
+                            try {
+                                const json = JSON.parse(data);
+                                return await fn(json);
+                            } catch (err) {
+                                return await fn(data);
+                            }
+                        });
+                    };
+                    const verify = this.config?.verify;
+                    if (verify && typeof verify === "function") {
+                        if (!token) {
+                            next(new Error("Authentication error"));
+                        } else {
+                            const session = await verify(token);
+                            if (!session) {
+                                next(new Error("Authentication error"));
+                            } else {
+                                (socket as any).session = session;
+                                next();
+                            }
+                        }
                     } else {
-                        (socket as any).session = session;
                         next();
                     }
+                } catch (err) {
+                    console.error(err);
+                    next(err);
                 }
-            } else {
-                next();
-            }
-        });
-        const container = this.context.container;
-        const globPath = apiDir + "/**/" + this.globFilesPath;
-
-        const controllers: Array<Function> = [];
-        const fixedPattern = posix.join(globPath.replace(/\\/g, "/"));
-        const files = glob.sync(fixedPattern, { absolute: true });
-        for (const file of files) {
-            const fileUrl = pathToFileURL(file).href;
-            const importedModule = await import(fileUrl);
-            if (importedModule.default) {
-                controllers.push(importedModule.default);
-            }
-        }
-        const socketControllers = this.config.socketControllers;
-        if (!socketControllers || typeof socketControllers !== "function") {
-            new SocketControllers({
-                io,
-                container: container,
-                controllers: controllers,
             });
-        } else {
-            try {
-                new socketControllers({
+            const container = this.context.container;
+            const globPath = apiDir + "/**/" + this.globFilesPath;
+
+            const controllers: Array<Function> = [];
+            const fixedPattern = posix.join(globPath.replace(/\\/g, "/"));
+            const files = glob.sync(fixedPattern, { absolute: true });
+            for (const file of files) {
+                const fileUrl = pathToFileURL(file).href;
+                const importedModule = await import(fileUrl);
+                if (importedModule.default) {
+                    controllers.push(importedModule.default);
+                }
+            }
+            const socketControllers = this.config.socketControllers;
+            if (!socketControllers || typeof socketControllers !== "function") {
+                new SocketControllers({
                     io,
                     container: container,
                     controllers: controllers,
                 });
-            } catch (err) {
-                console.error(err);
+            } else {
+                try {
+                    new socketControllers({
+                        io,
+                        container: container,
+                        controllers: controllers,
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
             }
+        } catch (err) {
+            console.error(err);
         }
-
     }
     async onInit(ctx: AppContext) {
         this.context = ctx;
