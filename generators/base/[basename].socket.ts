@@ -43,13 +43,13 @@ export default class {{className}}Controller {
     console.log("{{className}} disconnected");
   }
 
-  @OnMessage(SocketEvent.{{eventName}})
+  @OnMessage(Socket{{className}}Event.{{eventName}})
   async on{{pascalCase eventName}} (
   @ConnectedSocket() socket: AppSocketType,
-    @MessageBody() message: SocketPayloads[SocketEvent.{{eventName}}]
+    @MessageBody() message: Socket{{className}}Payloads[Socket{{className}}Event.{{eventName}}]
   ) {
   console.log("Received {{eventName}} message:", message);
-  socket.emitSuccess(SocketEvent.{{eventName}}, {
+  socket.emitSuccess(Socket{{className}}Event.{{eventName}}, {
   message: "{{className}} processed event {{eventName}}.",
     });
   }
