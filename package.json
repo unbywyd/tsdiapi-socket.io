@@ -1,7 +1,7 @@
 {
   "name": "@tsdiapi/socket.io",
   "description": "WebSocket plugin for the TSDIAPI-Server framework, providing seamless integration with Socket.IO and socket-controllers.",
-  "version": "0.0.6",
+  "version": "0.2.0",
   "main": "output/index.js",
   "type": "module",
   "types": "output/index.d.ts",
@@ -24,7 +24,6 @@
     "tsdiapi",
     "websockets",
     "socket.io",
-    "socket-controllers",
     "typescript"
   ],
   "license": "MIT",
@@ -32,15 +31,13 @@
     "glob": "^11.0.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
     "@types/node": "^22.10.10",
     "typescript": "^5.7.2"
   },
   "peerDependencies": {
-    "@tsdiapi/server": "^0.1.0",
-    "socket-controllers": "^0.3.1",
-    "socket.io": "^4.8.1",
-    "typedi": "^0.10.0"
+    "fastify": "^5.2.1",
+    "@tsdiapi/server": "^0.2.0",
+    "socket.io": "^4.8.1"
   },
   "repository": {
     "type": "git",

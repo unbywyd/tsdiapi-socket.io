@@ -1,16 +1,18 @@
-import type { Application, Request, Response } from 'express';
 import { Server as httpServer } from "http";
 import { Server as SocketIOServer, ServerOptions, Socket } from "socket.io";
-import { glob } from 'glob';
-import { SocketControllers } from "socket-controllers";
 import type { AppPlugin, AppContext } from '@tsdiapi/server';
-import { posix } from "path";
-import { pathToFileURL } from "url";
+import { FastifyInstance } from 'fastify';
 
 export type SocketSuccessResponse<T> = {
     status: "ok";
     data?: T;
 };
+
+declare module "fastify" {
+    interface FastifyInstance {
+        io: SocketIOServer;
+    }
+}
 
 export type SocketErrorResponse = {
     status: "error";
@@ -32,6 +34,10 @@ export type AppSocket<
     emitError<E extends OutgoingEvent>(
         event: E,
         errors?: Array<string> | string
+    ): void;
+    on<E extends IncomingEvent>(
+        event: E,
+        listener: (payload: Payloads[E]) => void
     ): void;
 };
 
@@ -86,14 +92,12 @@ export function addAppSocketEmitter<
 }
 
 export type PluginOptions = {
-    autoloadGlobPath?: string;
     verify?<T>(token: string): Promise<T>;
     socketOptions?: Partial<ServerOptions>;
-    socketControllers?: typeof SocketControllers;
+    preClose?: (done: Function) => void;
 }
 
 const defaultConfig: Partial<PluginOptions> = {
-    autoloadGlobPath: "*.socket{.ts,.js}",
     socketOptions: {
         cors: {
             origin: "*",
@@ -111,31 +115,43 @@ export type SocketEvents = {
 class App implements AppPlugin {
     name = 'tsdiapi-socket.io';
     config: PluginOptions;
-    globFilesPath: string;
     context: AppContext;
 
     constructor(config?: PluginOptions) {
         this.config = { ...config };
-        this.globFilesPath = this.config.autoloadGlobPath || defaultConfig.autoloadGlobPath;
     }
-    async registerSocketControllers(app: Application, server: httpServer) {
+    async registerSocketControllers() {
         try {
-            const apiDir = this.context.apiDir;
-            let corsOptions = this.context.config?.corsOptions || defaultConfig.socketOptions?.cors;
-            if (this.config.socketOptions?.cors && corsOptions) {
+            const cors = "object" === typeof this.context.options.corsOptions ? this.context.options.corsOptions : null as Record<string, any>;
+            let corsOptions = ((cors || defaultConfig.socketOptions?.cors) as Record<string, any>) || defaultConfig.socketOptions?.cors;
+            if (this.config.socketOptions?.cors) {
                 corsOptions = { ...corsOptions, ...this.config.socketOptions.cors }
             }
+            const fastify = this.context.fastify;
+            const server = fastify.server as httpServer;
+            const socketOptions = {
+                ...defaultConfig.socketOptions,
+                ...this.config.socketOptions || {}
+            }
             const io = new SocketIOServer(server, {
+                ...socketOptions,
                 cors: corsOptions
             });
-
-            // Socket.io Started 
-            this.context.logger.info(`Socket.io Started`);
-
-            app.use(function (req: Request, res: Response, next) {
-                (req as any).io = io;
-                next();
+            function defaultPreClose(done: Function) {
+                (fastify as any).io.local.disconnectSockets(true)
+                done()
+            }
+            fastify.decorate('io', io);
+            fastify.addHook('preClose', (done: Function) => {
+                if (this.config.preClose) {
+                    return this.config.preClose(done);
+                }
+                return defaultPreClose(done);
             });
+            fastify.addHook('onClose', (fastify: FastifyInstance, done) => {
+                (fastify as any).io.close()
+                done()
+            })
             io.use(async (socket: Socket, next: any) => {
                 try {
                     addAppSocketEmitter(socket);
@@ -145,9 +161,9 @@ class App implements AppPlugin {
                         originOn.call(socket, event, async function (data: any) {
                             try {
                                 const json = JSON.parse(data);
-                                return await fn(json);
+                                return await fn.apply(socket, [json]);
                             } catch (err) {
-                                return await fn(data);
+                                return await fn.apply(socket, [data]);
                             }
                         });
                     };
@@ -172,37 +188,6 @@ class App implements AppPlugin {
                     next(err);
                 }
             });
-            const container = this.context.container;
-            const globPath = apiDir + "/**/" + this.globFilesPath;
-
-            const controllers: Array<Function> = [];
-            const fixedPattern = posix.join(globPath.replace(/\\/g, "/"));
-            const files = glob.sync(fixedPattern, { absolute: true });
-            for (const file of files) {
-                const fileUrl = pathToFileURL(file).href;
-                const importedModule = await import(fileUrl);
-                if (importedModule.default) {
-                    controllers.push(importedModule.default);
-                }
-            }
-            const socketControllers = this.config.socketControllers;
-            if (!socketControllers || typeof socketControllers !== "function") {
-                new SocketControllers({
-                    io,
-                    container: container,
-                    controllers: controllers,
-                });
-            } else {
-                try {
-                    new socketControllers({
-                        io,
-                        container: container,
-                        controllers: controllers,
-                    });
-                } catch (err) {
-                    console.error(err);
-                }
-            }
         } catch (err) {
             console.error(err);
         }
@@ -211,7 +196,8 @@ class App implements AppPlugin {
         this.context = ctx;
     }
     async beforeStart(ctx: AppContext) {
-        this.registerSocketControllers(ctx.app, ctx.server);
+        this.context = ctx;
+        this.registerSocketControllers();
     }
 }
 
